@@ -29,11 +29,9 @@ switch ($modx->event->name) {
 
             $xml = new \SimpleXMLElement('http://www.cbr.ru/scripts/XML_daily.asp', 0, true);
 
-            $values = [];
-
-            if (isset($currencies['RUB'])) {
-                $values['RUB'] = 1;
-            }
+            $values = [
+                'RUB' => 1,
+            ];
 
             foreach ($xml->Valute as $item) {
                 $code = (string) $item->CharCode;
@@ -43,20 +41,22 @@ switch ($modx->event->name) {
                 }
             }
 
-            if ($defaultCode != 'RUB') {
-                foreach ($values as $code => $value) {
-                    if ($code != $defaultCode) {
-                        $values[$code] = $value / $values[$defaultCode];
-                    }
+            foreach ($values as $code => $value) {
+                if ($code != $defaultCode) {
+                    $values[$code] = $values[$defaultCode] / $value;
                 }
-
-                $values[$defaultCode] = 1;
             }
+
+            $values[$defaultCode] = 1;
 
             $updated = false;
             $table = $modx->getFullTablename('commerce_currency');
 
             foreach ($values as $code => $value) {
+                if (!isset($currencies[$code])) {
+                    continue;
+                }
+
                 $value = substr($value, 0, 7);
 
                 if ($currencies[$code]['value'] != $value) {
