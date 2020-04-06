@@ -5,7 +5,7 @@
  * Updates currencies from CBR feed
  *
  * @category    plugin
- * @version     0.1.0
+ * @version     0.1.1
  * @author      mnoskov
  * @internal    @events OnWebPageInit,OnManagerBeforeDefaultCurrencyChange
  * @internal    @modx_category Commerce
