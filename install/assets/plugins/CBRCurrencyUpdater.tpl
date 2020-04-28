@@ -5,7 +5,7 @@
  * Updates currencies from CBR feed
  *
  * @category    plugin
- * @version     0.1.1
+ * @version     0.1.2
  * @author      mnoskov
  * @internal    @events OnWebPageInit,OnManagerBeforeDefaultCurrencyChange
  * @internal    @modx_category Commerce
@@ -27,7 +27,17 @@ switch ($modx->event->name) {
             $defaultCode = ci()->currency->getDefaultCurrencyCode();
             $default     = $currencies[$defaultCode];
 
-            $xml = new \SimpleXMLElement('http://www.cbr.ru/scripts/XML_daily.asp', 0, true);
+            $handler = set_error_handler(null);
+
+            try {
+                $xml = new \SimpleXMLElement('http://cbr.ru/scripts/XML_daily.asp', 0, true);
+            } catch (\Exception $e) {
+                $modx->logEvent(0, 3, $e->getMessage(), 'CBR Currency Updater');
+                set_error_handler($handler);
+                return true;
+            }
+
+            set_error_handler($handler);
 
             $values = [
                 'RUB' => 1,
